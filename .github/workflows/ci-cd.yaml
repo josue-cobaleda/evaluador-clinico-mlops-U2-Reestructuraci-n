@@ -1,9 +1,7 @@
 name: CI/CD Evaluador Clínico
 
 permissions:
-  contents: write
-  pull-requests: write
-  issues: write
+  contents: read
   packages: write
 
 on:
