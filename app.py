@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from datetime import datetime
 import os
 
-# Ruta del archivo de logs
+
 log_file = "logs/predicciones.txt"
 os.makedirs("logs", exist_ok=True)
 
@@ -14,9 +14,16 @@ def home():
 
 @app.route('/predecir', methods=['POST'])
 def predecir():
-    edad = int(request.form['edad'])
-    pcr = float(request.form['pcr'])
-    fc = int(request.form['fc'])
+
+    if request.is_json:
+        datos = request.get_json()
+        edad = int(datos.get('edad', 0))
+        pcr = float(datos.get('pcr', 0))
+        fc = int(datos.get('fc', 0))
+    else:
+        edad = int(request.form.get('edad', 0))
+        pcr = float(request.form.get('pcr', 0))
+        fc = int(request.form.get('fc', 0))
 
     # Simulación de un "modelo" con 5 categorías
     if pcr < 3 and fc < 90 and edad < 50:
@@ -33,6 +40,16 @@ def predecir():
     # Guardar la predicción con fecha y categoría
     with open(log_file, "a") as f:
         f.write(f"{datetime.now()}, {resultado}\n")
+
+
+    if request.is_json:
+        return jsonify({
+            "resultado": resultado,
+            "edad": edad,
+            "pcr": pcr,
+            "fc": fc
+        }), 200
+
 
     return render_template('index.html', resultado=resultado, edad=edad, pcr=pcr, fc=fc)
 
