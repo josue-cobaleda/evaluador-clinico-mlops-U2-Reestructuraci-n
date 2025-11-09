@@ -11,7 +11,7 @@ def test_prediccion_leve():
         "fc": 100,
         "edad": 25
     }
-    respuesta = cliente.post("/predict", json=datos)
+    respuesta = cliente.post("/predecir", json=datos)
     assert respuesta.status_code == 200
     assert "ENFERMEDAD LEVE" in respuesta.json["resultado"]
 
@@ -24,7 +24,7 @@ def test_reporte_se_actualiza():
 
     # Hacer predicción
     datos = {"pcr": 30, "fc": 160, "edad": 90}
-    cliente.post("/predict", json=datos)
+    cliente.post("/predecir", json=datos)
 
     # Consultar reporte
     resp = cliente.get("/reporte")
