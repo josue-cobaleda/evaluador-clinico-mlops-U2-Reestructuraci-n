@@ -4,6 +4,7 @@ from app import app
 import os
 import requests
 
+# Validar que genere predicciones
 def test_prediccion_leve():
     cliente = app.test_client()
     datos = {
@@ -15,6 +16,7 @@ def test_prediccion_leve():
     assert respuesta.status_code == 200
     assert "ENFERMEDAD LEVE" in respuesta.json["resultado"]
 
+# Validarlas predicciones se guarden
 def test_reporte_se_actualiza():
     cliente = app.test_client()
 
