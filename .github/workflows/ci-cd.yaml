@@ -1,5 +1,10 @@
 name: CI/CD Evaluador Clínico
 
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+
 on:
   pull_request:
     branches: [ "main" ]
@@ -7,6 +12,7 @@ on:
     branches: [ "main" ]
 
 jobs:
+  # Pruebas unitarias
   test:
     runs-on: ubuntu-latest
     name: Ejecutar pruebas unitarias
@@ -43,3 +49,33 @@ jobs:
           header: ci-comment
           message: |
             **CI/CD terminado con éxito. Todo está correcto para revisión.**
+
+  # Construir y publicar imagen Docker (solo después del merge a main)
+  build:
+    name: Construir y publicar imagen Docker
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Iniciar sesión en GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construir imagen Docker
+        run: |
+          IMAGE_NAME=ghcr.io/sebastianb92/evaluador_clinico:latest
+          echo "Construyendo imagen $IMAGE_NAME"
+          docker build -t $IMAGE_NAME .
+
+      - name: Publicar imagen Docker en GHCR
+        run: |
+          IMAGE_NAME=ghcr.io/sebastianb92/evaluador_clinico:latest
+          echo "Publicando imagen $IMAGE_NAME"
+          docker push $IMAGE_NAME
