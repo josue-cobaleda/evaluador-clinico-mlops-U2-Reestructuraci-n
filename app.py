@@ -1,31 +1,42 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 from datetime import datetime
 import os
+import csv
 
-
-log_file = "logs/predicciones.txt"
-os.makedirs("logs", exist_ok=True)
+# === CONFIGURACIÓN DE ARCHIVOS ===
+LOG_DIR = "logs"
+LOG_FILE = os.path.join(LOG_DIR, "predicciones.csv")
+os.makedirs(LOG_DIR, exist_ok=True)
 
 app = Flask(__name__)
 
+def asegurar_archivo_csv():
+    """Crea el archivo de logs si no existe, con encabezados."""
+    if not os.path.exists(LOG_FILE):
+        with open(LOG_FILE, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(["fecha", "edad", "pcr", "fc", "resultado"])
+
+# === RUTA PRINCIPAL ===
 @app.route('/')
 def home():
     return render_template('index.html')
 
+# === RUTA DE PREDICCIÓN ===
 @app.route('/predecir', methods=['POST'])
 def predecir():
-
+    # Soporte para JSON y formulario web
     if request.is_json:
-        datos = request.get_json()
-        edad = int(datos.get('edad', 0))
-        pcr = float(datos.get('pcr', 0))
-        fc = int(datos.get('fc', 0))
+        data = request.get_json()
+        edad = int(data.get('edad', 0))
+        pcr = float(data.get('pcr', 0))
+        fc = int(data.get('fc', 0))
     else:
         edad = int(request.form.get('edad', 0))
         pcr = float(request.form.get('pcr', 0))
         fc = int(request.form.get('fc', 0))
 
-    # Simulación de un "modelo" con 5 categorías
+    # Simulación de un modelo con 5 categorías clínicas
     if pcr < 3 and fc < 90 and edad < 50:
         resultado = "NO ENFERMO"
     elif 3 <= pcr < 10 or 90 <= fc < 110:
@@ -37,50 +48,59 @@ def predecir():
     else:
         resultado = "ENFERMEDAD TERMINAL"
 
-    # Guardar la predicción con fecha y categoría
-    with open(log_file, "a") as f:
-        f.write(f"{datetime.now()}, {resultado}\n")
+    # Asegurar archivo antes de escribir
+    asegurar_archivo_csv()
 
+    # Guardar predicción en CSV
+    with open(LOG_FILE, "a", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            edad, pcr, fc, resultado
+        ])
 
+    # Si la petición vino desde JSON (como en los tests), devolvemos JSON
     if request.is_json:
-        return jsonify({
-            "resultado": resultado,
-            "edad": edad,
-            "pcr": pcr,
-            "fc": fc
-        }), 200
+        return {"resultado": resultado}, 200
 
+    # Si vino desde el navegador, renderizamos la plantilla
+    return render_template('index.html', resultado=resultado)
 
-    return render_template('index.html', resultado=resultado, edad=edad, pcr=pcr, fc=fc)
+# === RUTA DE HISTORIAL (VISUAL) ===
+@app.route('/historial')
+def historial():
+    asegurar_archivo_csv()
 
-@app.route('/reporte', methods=['GET'])
-def reporte():
-    if not os.path.exists(log_file):
-        return jsonify({"mensaje": "No hay predicciones registradas."})
+    data = []
+    with open(LOG_FILE, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            data.append(row)
 
-    with open(log_file) as f:
-        lineas = [l.strip() for l in f.readlines() if l.strip()]
+    if not data:
+        return render_template(
+            'historial.html',
+            total_por_categoria={},
+            ultimas_predicciones=[],
+            fecha_ultima="Sin registros"
+        )
 
-    if not lineas:
-        return jsonify({"mensaje": "No hay predicciones registradas."})
+    # Cálculos estadísticos
+    total_por_categoria = {}
+    for row in data:
+        cat = row["resultado"]
+        total_por_categoria[cat] = total_por_categoria.get(cat, 0) + 1
 
-    total = len(lineas)
-    categorias = {}
-    for l in lineas:
-        _, cat = l.split(", ")
-        categorias[cat] = categorias.get(cat, 0) + 1
+    ultimas_predicciones = data[-5:][::-1] if len(data) >= 5 else data[::-1]
+    fecha_ultima = data[-1]["fecha"]
 
-    ultimas = lineas[-5:]
-    fecha_ultima = lineas[-1].split(",")[0]
+    return render_template(
+        'historial.html',
+        total_por_categoria=total_por_categoria,
+        ultimas_predicciones=ultimas_predicciones,
+        fecha_ultima=fecha_ultima
+    )
 
-    return jsonify({
-        "total_predicciones": total,
-        "por_categoria": categorias,
-        "ultimas_5": ultimas,
-        "ultima_fecha": fecha_ultima
-    })
-
-
+# === MODO SERVICIO ===
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-    
