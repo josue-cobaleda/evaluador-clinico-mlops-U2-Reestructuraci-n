@@ -24,16 +24,16 @@ def home():
 # === RUTA DE PREDICCIÓN ===
 @app.route('/predecir', methods=['POST'])
 def predecir():
-    # ✅ Soporte para JSON y formulario web
+    # Soporte para JSON y formulario web
     if request.is_json:
         data = request.get_json()
-        edad = int(data['edad'])
-        pcr = float(data['pcr'])
-        fc = int(data['fc'])
+        edad = int(data.get('edad', 0))
+        pcr = float(data.get('pcr', 0))
+        fc = int(data.get('fc', 0))
     else:
-        edad = int(request.form['edad'])
-        pcr = float(request.form['pcr'])
-        fc = int(request.form['fc'])
+        edad = int(request.form.get('edad', 0))
+        pcr = float(request.form.get('pcr', 0))
+        fc = int(request.form.get('fc', 0))
 
     # Simulación de un modelo con 5 categorías clínicas
     if pcr < 3 and fc < 90 and edad < 50:
@@ -55,17 +55,16 @@ def predecir():
             edad, pcr, fc, resultado
         ])
 
-    # ✅ Si la petición vino desde JSON (como en los tests), devolvemos JSON
+    # Si la petición vino desde JSON (como en los tests), devolvemos JSON
     if request.is_json:
         return {"resultado": resultado}, 200
 
-    # ✅ Si vino desde el navegador, renderizamos la plantilla
+    # Si vino desde el navegador, renderizamos la plantilla
     return render_template('index.html', resultado=resultado)
 
 # === RUTA DE HISTORIAL (VISUAL) ===
 @app.route('/historial')
 def historial():
-    # Leer datos del historial
     data = []
     if os.path.exists(LOG_FILE):
         with open(LOG_FILE, "r", encoding="utf-8") as f:
@@ -74,7 +73,12 @@ def historial():
                 data.append(row)
 
     if not data:
-        return render_template('historial.html', total_por_categoria={}, ultimas_predicciones=[], fecha_ultima="Sin registros")
+        return render_template(
+            'historial.html',
+            total_por_categoria={},
+            ultimas_predicciones=[],
+            fecha_ultima="Sin registros"
+        )
 
     # Cálculos estadísticos
     total_por_categoria = {}
