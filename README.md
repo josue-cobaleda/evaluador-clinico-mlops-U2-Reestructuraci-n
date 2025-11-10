@@ -137,7 +137,8 @@ Campos de entrada con descripciones y ejemplos.
 
 Diagnóstico mostrado de forma clara y visual.
 
-<img src="./img/app_web.png" alt="Interfaz Web" width="400" height="auto">
+<img src="./img/evaluador_clinico.png" alt="Interfaz Web" width="400" height="auto">
+<img src="./img/predicciones.png" alt="Historial de predicciones" width="400" height="auto">
 
 ---
 
