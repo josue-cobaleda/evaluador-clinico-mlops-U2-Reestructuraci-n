@@ -176,6 +176,7 @@ Disparan el pipeline de CD para desplegar el modelo actualizado si supera cierto
 
 ## 5. Estructura del proyecto (estado actual del repo)
 
+```
 servicio_medico/
 │
 ├── app.py              # Aplicación Flask: levanta el servidor, maneja rutas y lógica de predicción.
@@ -187,6 +188,7 @@ servicio_medico/
 ├── logs/
 │   └── predicciones.csv  # Archivo CSV donde se guardan las predicciones simuladas.
 └── README.md           # Este documento.
+```
 
 En una evolución futura, podrían añadirse directorios como:
 .github/workflows/ → pipelines de CI/CD.
