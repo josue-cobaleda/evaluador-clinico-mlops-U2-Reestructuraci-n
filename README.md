@@ -191,10 +191,10 @@ servicio_medico/
 ```
 
 En una evolución futura, podrían añadirse directorios como:
-.github/workflows/ → pipelines de CI/CD.
-infra/ → código de infraestructura (Terraform, etc.).
-notebooks/ → exploración y EDA.
-models/ → modelos entrenados y scripts de entrenamiento.
+- .github/workflows/ → pipelines de CI/CD.
+- infra/ → código de infraestructura (Terraform, etc.).
+- notebooks/ → exploración y EDA.
+- models/ → modelos entrenados y scripts de entrenamiento.
 
 ---
 
