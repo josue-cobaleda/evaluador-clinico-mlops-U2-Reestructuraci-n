@@ -54,33 +54,33 @@ Aunque este repositorio implementa solo una parte (el servicio de predicción si
 ```mermaid
 flowchart LR
     subgraph Datos_y_Features["Capa de datos y features"]
-        D1[Fuentes de datos clínicos<br/>Historias, laboratorios, síntomas] 
-        D2[(Almacenamiento seguro<br/>Data Lake / BBDD)]
-        D3[(Versionado de datos<br/>DVC u otra herramienta)]
+        D1["Fuentes de datos clínicos\nHistorias, laboratorios, síntomas"]
+        D2["Almacenamiento seguro\nData Lake / BBDD"]
+        D3["Versionado de datos\nDVC u otra herramienta"]
     end
 
     subgraph Entrenamiento_Offline["Entrenamiento offline y experimentación"]
-        E1[EDA y preparación de datos<br/>Notebooks + pandas]
-        E2[Entrenamiento de modelos<br/>scikit-learn / PyTorch / TensorFlow]
-        E3[Registro de experimentos y modelos<br/>MLflow]
+        E1["EDA y preparación de datos\nNotebooks + pandas"]
+        E2["Entrenamiento de modelos\nscikit-learn / PyTorch / TensorFlow"]
+        E3["Registro de experimentos y modelos\nMLflow"]
     end
 
     subgraph Contenerizacion["Empaquetado y entrega"]
-        C1[Repositorio Git<br/>Código del servicio y del modelo]
-        C2[CI: GitHub Actions<br/>Tests + build de imagen Docker]
-        C3[(Registro de imágenes<br/>Docker Hub / ECR / GCR)]
+        C1["Repositorio Git\nCódigo del servicio y del modelo"]
+        C2["CI: GitHub Actions\nTests + build de imagen Docker"]
+        C3["Registro de imágenes\nDocker Hub / ECR / GCR"]
     end
 
     subgraph Despliegue_y_Serving["Despliegue y servicio de predicción"]
-        S1[Despliegue local<br/>Docker en PC del médico]
-        S2[Despliegue en nube<br/>Cloud Run / ECS / AKS]
-        S3[Servicio de predicción<br/>API Flask / interfaz web]
+        S1["Despliegue local\nDocker en PC del médico"]
+        S2["Despliegue en nube\nCloud Run / ECS / AKS"]
+        S3["Servicio de predicción\nAPI Flask / interfaz web"]
     end
 
     subgraph Monitoreo_y_CT["Monitoreo y reentrenamiento (CT)"]
-        M1[Monitoreo técnico<br/>Logs, latencia, errores]
-        M2[Monitoreo de modelo<br/>Métricas, deriva de datos]
-        M3[Trigger de reentrenamiento<br/>Jobs programados / alertas]
+        M1["Monitoreo técnico\nLogs, latencia, errores"]
+        M2["Monitoreo de modelo\nMétricas, deriva de datos"]
+        M3["Trigger de reentrenamiento\nJobs programados / alertas"]
     end
 
     D1 --> D2 --> D3 --> E1 --> E2 --> E3
@@ -92,6 +92,7 @@ flowchart LR
     S3 --> M1
     S3 --> M2
     M2 --> M3 --> E1
+
 
 🔍 Nota: En este repositorio está implementado sobre todo el bloque S3 (servicio de predicción Flask) y su contenerización básica. El resto de bloques están descritos como diseño hipotético para una versión futura del sistema.
 
