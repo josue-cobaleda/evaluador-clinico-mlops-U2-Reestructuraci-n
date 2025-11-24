@@ -99,6 +99,36 @@ El resto de bloques están descritos como **diseño hipotético** para una versi
 
 ---
 
+### 3.2 Supuestos y restricciones del sistema
+
+Para acotar el diseño del pipeline, se asumen las siguientes condiciones:
+
+- **Volumen de datos históricos**  
+  - ~10.000–100.000 registros de pacientes para enfermedades comunes.  
+  - << 1.000 registros para enfermedades huérfanas (clase fuertemente desbalanceada).
+
+- **Frecuencia de uso del modelo**  
+  - Decenas o cientos de consultas al día por parte de médicos (no es un sistema masivo tipo millones de requests por minuto).  
+  - Latencia objetivo por predicción: **< 1 segundo** desde que el médico envía el formulario.
+
+- **Entorno de despliegue**  
+  - Opción 1: ejecución local en el computador del médico (Docker en una máquina tipo laptop).  
+  - Opción 2: despliegue en la nube en un único servicio de contenedores (Cloud Run / ECS / Container Apps) con autoescalado básico.
+
+- **Privacidad y cumplimiento**  
+  - Los datos clínicos se almacenan **anonimizados o pseudonimizados**.  
+  - El acceso a datos y modelos está restringido mediante roles (p. ej. “médico”, “científico de datos”, “administrador de sistema”).  
+  - Todos los accesos a datos sensibles quedan registrados en logs de auditoría.
+
+- **Objetivo de desempeño del modelo**  
+  - Métrica prioritaria: **recall alto** para casos “enfermo” (evitar falsos negativos), especialmente en enfermedades huérfanas.  
+  - Se aceptan más falsos positivos siempre que se garantice seguridad del paciente.  
+  - El modelo se considera degradado si el recall en producción cae por debajo de un umbral (ej. 0.85) durante una ventana de tiempo definida.
+
+Estas suposiciones guían las decisiones de arquitectura del pipeline y las tecnologías escogidas.
+
+---
+
 ## 4. Componentes del pipeline (detalle)
 
 ### 4.1 Datos y preparación 
@@ -175,6 +205,15 @@ Toman los nuevos datos etiquetados.
 Entrenan de nuevo el modelo.
 Registran la nueva versión en MLflow.
 Disparan el pipeline de CD para desplegar el modelo actualizado si supera ciertos umbrales.
+
+
+### 4.6 Gobierno, seguridad y cumplimiento
+
+- Control de acceso por roles (por ejemplo, integración con el sistema de identidad del hospital).  
+- Cifrado de datos en reposo (BBDD / buckets) y en tránsito (HTTPS / TLS).  
+- Logs de auditoría para saber quién accedió a qué información y cuándo.  
+- Políticas claras de retención de datos (por ejemplo, anonimizar o eliminar datos pasados ciertos años).  
+- Trazabilidad completa: para cada predicción se puede reconstruir qué versión de modelo y qué conjunto de datos se utilizó.
 
 ---
 
@@ -330,6 +369,13 @@ Estas tecnologías no están todavía en el código, pero son parte del diseño 
 - Servicios de contenedores en la nube: Google Cloud Run, AWS ECS/Fargate, Azure Container Apps, Kubernetes (GKE/EKS/AKS).
 - Monitoreo y observabilidad: Prometheus + Grafana, o soluciones nativas (Cloud Monitoring, CloudWatch). Evidently AI para detección de deriva en datos/modelo.
 
+En este diseño se priorizan:
+
+- **GitHub Actions** sobre otras herramientas de CI (p. ej. Jenkins) porque el código ya vive en GitHub y simplifica el onboarding del equipo.
+- **Cloud Run / ECS / Container Apps** en lugar de clusters Kubernetes dedicados cuando solo se requiere exponer un servicio REST de baja-moderada carga, reduciendo complejidad operativa.
+- **MLflow** frente a otras alternativas porque cubre de forma integrada tracking de experimentos, registro de modelos y transición Staging → Production.
+- **DVC** se propone porque permite versionar datos clínicos sin meter archivos pesados directamente al repositorio Git.
+  
 ---
 
 ## 12. CHANGELOG (respecto al README original)
