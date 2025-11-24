@@ -95,7 +95,9 @@ flowchart LR
 
 🔍 Nota: En este repositorio está implementado sobre todo el bloque S3 (servicio de predicción Flask) y su contenerización básica. El resto de bloques están descritos como diseño hipotético para una versión futura del sistema.
 
+
 ## 4. Componentes del pipeline (detalle)
+
 ### 4.1 Datos y preparación 
 
 En una solución completa con datos reales:
@@ -113,6 +115,7 @@ Cuando se disponga de datos reales, el flujo sería:
 Actualmente, este repo solo tiene una función determinista que simula el modelo, pero el diseño ya está pensado para que puedas reemplazarla por un modelo real posteriormente.
 
 ### 4.3 Contenerización y CI/CD
+
 Lo que ya está implementado
 Dockerfile simple que construye una imagen con:
 Python 3
@@ -136,6 +139,7 @@ Publicación opcional de la imagen en un registro de contenedores (Docker Hub / 
 Esto convertiría este servicio en un componente con entrega continua, listo para integrarse en un pipeline más grande.
 
 ### 4.4 Despliegue del servicio de predicción
+
 Despliegue local (implementado). El escenario actual es:
 - El médico/desarrollador ejecuta el contenedor en su máquina.
 - Accede vía navegador a http://localhost:5000.
@@ -148,7 +152,8 @@ Despliegue en la nube (diseño futuro). La misma imagen Docker puede desplegarse
 
 En ambos casos, el API Flask (o el formulario web) viviría dentro del contenedor y quedaría expuesto tras un balanceador de carga.
 
-### 4.5 Monitoreo y reentrenamiento 
+### 4.5 Monitoreo y reentrenamiento
+
 Aunque este prototipo no incluye monitoreo avanzado, la arquitectura pensada contempla:
 #### Monitoreo técnico:
 - Logs de acceso y errores.
@@ -166,6 +171,7 @@ Disparan el pipeline de CD para desplegar el modelo actualizado si supera cierto
 
 
 ## 5. Estructura del proyecto (estado actual del repo)
+
 servicio_medico/
 │
 ├── app.py              # Aplicación Flask: levanta el servidor, maneja rutas y lógica de predicción.
@@ -187,7 +193,7 @@ models/ → modelos entrenados y scripts de entrenamiento.
 
 ## 6. Ejecución local con Docker
 
-6.1 Requisitos previos
+### 6.1 Requisitos previos
 Docker instalado y funcionando.
 Opcionalmente, Python 3.10+ si se quiere ejecutar la app sin contenedor.
 Sigue estos pasos para levantar la aplicación en tu computadora:
@@ -297,11 +303,11 @@ Diagnóstico mostrado de forma clara y visual.
 ## 10. Tecnologías usadas
 
 Implementadas en este repositorio
-🐍 Python 3.10+
-🌶 Flask (microframework web para la API y la interfaz HTML).
-🧱 HTML5 / CSS3 (plantillas básicas para la UI).
-🐳 Docker (contenerización del servicio).
-📁 CSV para logging simple del historial de predicciones.
+- 🐍 Python 3.10+
+- 🌶 Flask (microframework web para la API y la interfaz HTML).
+- 🧱 HTML5 / CSS3 (plantillas básicas para la UI).
+- 🐳 Docker (contenerización del servicio).
+- 📁 CSV para logging simple del historial de predicciones.
 
 Propuestas para una versión MLOps completa
 Estas tecnologías no están todavía en el código, pero son parte del diseño de MLOps:
