@@ -49,7 +49,7 @@ Aunque este repositorio implementa solo una parte (el servicio de predicción si
 
 ---
 
-### 3.1 Diagrama general del pipeline (Mermaid)
+### 3.1 Diagrama general del pipeline 
 
 ```mermaid
 flowchart LR
