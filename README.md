@@ -127,10 +127,14 @@ El código del servicio (app.py)
 La imagen se construye localmente y se ejecuta con:
 
 ##### Construir imagen
+```
 docker build -t servicio_medico:1.0 .
+```
 
 #### Ejecutar contenedor
+```
 docker run --rm -p 5000:5000 servicio_medico:1.0
+```
 
 Lo que se propone (diseño MLOps)
 - Mantener el código en un repo Git (GitHub).
