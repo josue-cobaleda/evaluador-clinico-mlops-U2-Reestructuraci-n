@@ -93,9 +93,6 @@ flowchart LR
     S3 --> M2
     M2 --> M3 --> E1
 
-
-🔍 Nota: En este repositorio está implementado sobre todo el bloque S3 (servicio de predicción Flask) y su contenerización básica. El resto de bloques están descritos como diseño hipotético para una versión futura del sistema.
-
 ---
 
 ## 4. Componentes del pipeline (detalle)
