@@ -95,6 +95,7 @@ flowchart LR
 
 🔍 Nota: En este repositorio está implementado sobre todo el bloque S3 (servicio de predicción Flask) y su contenerización básica. El resto de bloques están descritos como diseño hipotético para una versión futura del sistema.
 
+---
 
 ## 4. Componentes del pipeline (detalle)
 
@@ -169,6 +170,7 @@ Entrenan de nuevo el modelo.
 Registran la nueva versión en MLflow.
 Disparan el pipeline de CD para desplegar el modelo actualizado si supera ciertos umbrales.
 
+---
 
 ## 5. Estructura del proyecto (estado actual del repo)
 
@@ -190,6 +192,7 @@ infra/ → código de infraestructura (Terraform, etc.).
 notebooks/ → exploración y EDA.
 models/ → modelos entrenados y scripts de entrenamiento.
 
+---
 
 ## 6. Ejecución local con Docker
 
